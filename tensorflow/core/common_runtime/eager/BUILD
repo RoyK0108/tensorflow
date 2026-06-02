@@ -359,6 +359,7 @@ tf_cuda_library(
         "//tensorflow/core/platform:platform_port",
         "//tensorflow/core/util:managed_stack_trace",
         "@com_google_absl//absl/container:inlined_vector",
+        "@com_google_absl//absl/log",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:optional",

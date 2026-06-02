@@ -21,6 +21,7 @@ limitations under the License.
 #include <vector>
 
 #include "absl/container/inlined_vector.h"
+#include "absl/log/log.h"
 #include "absl/types/optional.h"
 #include "absl/types/span.h"
 #include "absl/types/variant.h"
@@ -87,7 +88,8 @@ class EagerOperation : public ImmediateExecutionOperation {
     last_set_device_name_ = "\177";  // DEL (an invalid value)
   }
 
-  absl::Status SetAttrValue(const char* attr_name, const AttrValue& value);
+  absl::Status SetAttrValue(const char* attr_name,
+                            const AttrValue& value) override;
 
   absl::Status AddInput(AbstractTensorHandle* input) override;
   absl::Status AddInputList(
@@ -236,7 +238,7 @@ class EagerOperation : public ImmediateExecutionOperation {
             kInvalidOpId, /*is_component_function=*/false, step_id};
       }
     } else {
-      LOG(WARNING) << "SetStepId() should not receive a gloabl rendezvous id.";
+      LOG(WARNING) << "SetStepId() should not receive a global rendezvous id.";
     }
   }
 
