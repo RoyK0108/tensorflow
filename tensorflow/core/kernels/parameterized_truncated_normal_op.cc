@@ -25,8 +25,6 @@ limitations under the License.
 #include "tensorflow/core/kernels/parameterized_truncated_normal_op.h"
 
 #include <algorithm>
-#include <cmath>
-#include <memory>
 
 #include "tensorflow/core/framework/op_kernel.h"
 #include "tensorflow/core/framework/register_types.h"
@@ -35,7 +33,6 @@ limitations under the License.
 #include "tensorflow/core/framework/tensor_util.h"
 #include "tensorflow/core/kernels/stateless_random_ops.h"
 #include "tensorflow/core/lib/random/random_distributions.h"
-#include "tensorflow/core/platform/logging.h"
 #include "tensorflow/core/util/guarded_philox_random.h"
 #include "tensorflow/core/util/work_sharder.h"
 
@@ -635,13 +632,13 @@ class ParameterizedTruncatedNormalOp : public OpKernel {
     TensorShape tensor_shape;
     OP_REQUIRES_OK(ctx, tensor::MakeShape(shape_tensor, &tensor_shape));
 
-    int32_t num_batches = tensor_shape.dim_size(0);
-    int32_t samples_per_batch = 1;
+    int64_t num_batches = tensor_shape.dim_size(0);
+    int64_t samples_per_batch = 1;
     const int32_t num_dims = tensor_shape.dims();
     for (int32_t i = 1; i < num_dims; i++) {
       samples_per_batch *= tensor_shape.dim_size(i);
     }
-    const int32_t num_elements = num_batches * samples_per_batch;
+    const int64_t num_elements = num_batches * samples_per_batch;
 
     // Allocate the output before fudging num_batches and samples_per_batch.
     Tensor* samples_tensor;
@@ -671,10 +668,11 @@ class ParameterizedTruncatedNormalOp : public OpKernel {
       // All batches have the same parameters, so we can update the batch size
       // to a reasonable value to improve parallelism (ensure enough batches,
       // and no very small batches which have high overhead).
-      int32_t size = num_batches * samples_per_batch;
-      int32_t adjusted_samples = kDesiredBatchSize;
+      int64_t size = num_batches * samples_per_batch;
+      int64_t adjusted_samples = kDesiredBatchSize;
       // Ensure adjusted_batches * adjusted_samples >= size.
-      int32_t adjusted_batches = Eigen::divup(size, adjusted_samples);
+      int64_t adjusted_batches =
+          (size + adjusted_samples - 1) / adjusted_samples;
       num_batches = adjusted_batches;
       samples_per_batch = adjusted_samples;
     } else {
