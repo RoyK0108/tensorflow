@@ -15,6 +15,9 @@
 # ==============================================================================
 source "${BASH_SOURCE%/*}/utilities/setup.sh"
 
+echo "🚀 Starting wheel build for Python 3.14 Debugging"
+python3 --version
+
 # Extract hermetic CUDA User-Mode Driver (UMD) flags
 HERMETIC_CUDA_UMD_BUILD_FLAGS=""
 HERMETIC_CUDA_UMD_TEST_FLAGS=""

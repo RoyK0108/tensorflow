@@ -45,6 +45,7 @@ if [[ -n "${TF_ANY_EXTRA_ENV:-}" ]]; then
   export TFCI="$TFCI,$TF_ANY_EXTRA_ENV"
 fi
 if [[ -n "${TF_ANY_SCRIPT:-}" ]]; then
+  chmod +x "$TF_ANY_SCRIPT"
   "$TF_ANY_SCRIPT"
 elif [[ -n "${TF_ANY_TARGETS:-}" ]]; then
   source "${BASH_SOURCE%/*}/utilities/setup.sh"
